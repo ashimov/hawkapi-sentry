@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.1.0] - 2026-04-19
+
+### Added
+
+- `SentryPlugin` — HawkAPI `Plugin` subclass that initialises `sentry_sdk` on startup,
+  flushes on shutdown, and captures unhandled exceptions via `on_exception`.
+- `SentryMiddleware` — HawkAPI `Middleware` subclass that starts a Sentry performance
+  transaction per request and attaches `http.*` tags on response.
+- No-op mode: when `dsn` is `None` or empty string, `SentryPlugin.on_startup` does
+  nothing — safe to use in local/test environments without a real DSN.
+- `ignore_status_codes` parameter (default `(404, 401, 403)`) to suppress Sentry events
+  for expected HTTP errors.
+- `user_getter` callable and `include_user_data` flag for attaching user context to events.
+- `before_send` passthrough to `sentry_sdk.init` for full event filtering control.
+- Global `tags` dict applied to every captured event.
+- `traces_sample_rate` and `profiles_sample_rate` wiring.
+- Header redaction for `Authorization`, `Cookie`, `X-Api-Key`, `X-Auth-Token`,
+  `Proxy-Authorization` in request context attached to Sentry events.
+- `traceparent` header propagation into Sentry transaction `trace_id`.
+- Full test suite (15 tests) covering plugin lifecycle, middleware behaviour,
+  header redaction, user context, tag propagation, and integration with a real
+  HawkAPI app via `httpx.AsyncClient`.
+- CI workflow: lint (`ruff`), typecheck (`pyright`), test matrix (Python 3.12 + 3.13).
+- Release workflow: build with `uv build`, publish via PyPI trusted publishing.
+
+[Unreleased]: https://github.com/ashimov/hawkapi-sentry/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/ashimov/hawkapi-sentry/releases/tag/v0.1.0
